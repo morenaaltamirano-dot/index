@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Declaración de Origen de Fondos</title>
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at center, #2b0061, #0a0014);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  form {
+    background: rgba(60, 0, 109, 0.8);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #ff4be1;
+    width: 90%;
+    max-width: 500px;
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+
+  h2 {
+    text-align: center;
+    color: #ffd700;
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 500;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 5px;
+    font-family: inherit;
+  }
+
+  .opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .opcion {
+    background-color: rgba(255, 75, 225, 0.1);
+    border: 2px solid #ff4be1;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 500;
+  }
+
+  .opcion:hover {
+    background-color: rgba(255, 75, 225, 0.25);
+  }
+
+  .opcion.seleccionada {
+    background-color: #ff4be1;
+    color: #fff;
+    box-shadow: 0 0 10px #ff4be1;
+  }
+
+  button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ff4be1;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #ff69f8;
+  }
+
+  .grupo { display: none; margin-top: 10px; }
+
+  @keyframes aparecer {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+</head>
+
+<body>
+<form id="formOrigenFondos">
+  <h2>Declaración de Origen de Fondos</h2>
+
+  <label>Seleccioná tu(s) situación(es) laboral(es):</label>
+  <div class="opciones">
+    <div class="opcion" data-value="dependencia">En relación de dependencia</div>
+    <div class="opcion" data-value="independiente">Independiente</div>
+    <div class="opcion" data-value="jubilado">Jubilado</div>
+    <div class="opcion" data-value="ama">Ama de casa</div>
+    <div class="opcion" data-value="otro">Otro</div>
+  </div>
+
+  <!-- Dependencia -->
+  <div id="dependencia" class="grupo">
+    <h3>Relación de dependencia</h3>
+    <label>Nombre de la empresa:</label>
+    <input type="text" id="empresa">
+    <label>Cargo que ocupás:</label>
+    <input type="text" id="cargo">
+    <label>Rubro de la empresa:</label>
+    <input type="text" id="rubro">
+  </div>
+
+  <!-- Independiente -->
+  <div id="independiente" class="grupo">
+    <h3>Independiente</h3>
+    <label>Categoría:</label>
+    <select id="categoria">
+      <option value="">-- Seleccioná --</option>
+      <option value="Monotributista">Monotributista</option>
+      <option value="Autónomo">Autónomo</option>
+      <option value="Informal">Trabajo informal</option>
+    </select>
+
+    <label>Qué actividad realizás y de qué manera:</label>
+    <textarea id="actividad"></textarea>
+
+    <div id="campoInformal" style="display:none;">
+      <label>Dónde trabajás:</label>
+      <input type="text" id="lugar">
+    </div>
+  </div>
+
+  <!-- Ama de casa -->
+  <div id="ama" class="grupo">
+    <h3>Información del tercero</h3>
+    <label>Nombre completo del tercero:</label>
+    <input type="text" id="terceroNombre" required>
+    <label>DNI:</label>
+    <input type="text" id="terceroDNI" required>
+    <label>Fecha y lugar de nacimiento:</label>
+    <input type="text" id="terceroNacimiento" required>
+    <label>Vínculo que comparten:</label>
+    <input type="text" id="terceroVinculo" required>
+    <label>Ocupación:</label>
+    <input type="text" id="terceroOcupacion" required>
+  </div>
+
+  <!-- Otro -->
+  <div id="otro" class="grupo">
+    <h3>Otra situación</h3>
+    <label>Especificá cuál:</label>
+    <input type="text" id="detalleOtro">
+  </div>
+
+  <hr style="margin-top:25px; border:1px solid #ff4be1; opacity:0.5;">
+
+  <label>Nombre completo:</label>
+  <input type="text" id="nombre" required>
+
+  <label>DNI:</label>
+  <input type="text" id="dni" required>
+
+  <button type="submit">Enviar datos</button>
+</form>
+
+<script>
+const opciones = document.querySelectorAll('.opcion');
+const categoria = document.getElementById("categoria");
+const campoInformal = document.getElementById("campoInformal");
+
+// Mostrar/ocultar grupos
+opciones.forEach(op => {
+  op.addEventListener('click', () => {
+    const valor = op.dataset.value;
+    op.classList.toggle('seleccionada');
+    const grupo = document.getElementById(valor);
+    if (grupo) grupo.style.display = grupo.style.display === "block" ? "none" : "block";
+
+    if (valor === "ama") {
+      alert("Desde el Departamento de Auditoría nos solicitan que todos los clientes declaren el origen de los fondos a utilizar en nuestra plataforma. En caso de ser desempleado y que los fondos provengan de un tercero, solicitamos que nos indiques lo siguiente:");
+      document.getElementById("ama").style.display = "block";
+    }
+  });
+});
+
+categoria.addEventListener("change", () => {
+  campoInformal.style.display = categoria.value === "Informal" ? "block" : "none";
+});
+
+document.getElementById("formOrigenFondos").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value.trim();
+  const dni = document.getElementById("dni").value.trim();
+  let resumen = [];
+
+  if (document.querySelector('.opcion[data-value="dependencia"]').classList.contains('seleccionada')) {
+    resumen.push(`Dependencia | Empresa: ${empresa.value} | Cargo: ${cargo.value} | Rubro: ${rubro.value}`);
+  }
+
+  if (document.querySelector('.opcion[data-value="independiente"]').classList.contains('seleccionada')) {
+    let texto = `Independiente (${categoria.value}) | Actividad: ${actividad.value}`;
+    if (categoria.value === "Informal") texto += ` | Lugar: ${lugar.value}`;
+    resumen.push(texto);
+  }
+
+  if (document.querySelector('.opcion[data-value="ama"]').classList.contains('seleccionada')) {
+    resumen.push(`Ama de casa | Fondos de tercero: ${terceroNombre.value}, DNI: ${terceroDNI.value}, Nacido en: ${terceroNacimiento.value}, Vínculo: ${terceroVinculo.value}, Ocupación: ${terceroOcupacion.value}`);
+  }
+
+  if (document.querySelector('.opcion[data-value="otro"]').classList.contains('seleccionada')) {
+    resumen.push(`Otro | Detalle: ${detalleOtro.value}`);
+  }
+
+  const data = { nombre, dni, mensaje: resumen.join("\n") };
+
+  fetch("https://script.google.com/macros/s/AKfycbwlI6T3xkxqNCS4KtkxTqneA_GlVd1SpEEgKjCU5rqaXcb3gdPnS6ugZcpUKBIqCu7Irg/exec", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.text())
+  .then(resp => {
+    if (resp === "OK") {
+      mostrarModal("✅ Datos enviados correctamente.");
+      document.getElementById("formOrigenFondos").reset();
+    } else {
+      mostrarModal("⚠️ Envío realizado, pero no se pudo confirmar con el servidor.");
+    }
+  })
+  .catch(() => mostrarModal("❌ Error al enviar. Verificá la conexión o intentá más tarde."));
+});
+
+function mostrarModal(mensaje) {
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.top = "0";
+  modal.style.left = "0";
+  modal.style.width = "100%";
+  modal.style.height = "100%";
+  modal.style.background = "rgba(0, 0, 0, 0.7)";
+  modal.style.display = "flex";
+  modal.style.justifyContent = "center";
+  modal.style.alignItems = "center";
+  modal.style.zIndex = "9999";
+
+  const caja = document.createElement("div");
+  caja.style.background = "linear-gradient(180deg, #6a0dad, #3c006d)";
+  caja.style.padding = "30px 40px";
+  caja.style.borderRadius = "15px";
+  caja.style.color = "#fff";
+  caja.style.boxShadow = "0 0 20px #ff4be1";
+  caja.style.textAlign = "center";
+  caja.style.fontSize = "18px";
+  caja.style.animation = "aparecer 0.4s ease";
+  caja.innerText = mensaje;
+
+  modal.appendChild(caja);
+  document.body.appendChild(modal);
+  setTimeout(() => modal.remove(), 2500);
+}
+</script>
+</body>
+</html>
